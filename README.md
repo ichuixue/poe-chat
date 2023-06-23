@@ -55,7 +55,7 @@ wget -q -O - https://hacs.vip/get | HUB_DOMAIN=ghproxy.com/github.com DOMAIN=poe
      }
      ```
 3. Run the Siri shortcut once and agree to all permissions.
-4. Now you can use `hey siri 对话` to talk with ChatGPT on Apple devices (iPhone/iPad/Apple Watch/HomePod...)
+4. Now you can use `hey siri 对话` to talk with ChatGPT on Apple devices (iPhone/iPad/Apple Watch/HomePod/CarPlay...)
 
 
 ## HA service
