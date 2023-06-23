@@ -12,7 +12,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.components import persistent_notification
 import homeassistant.helpers.config_validation as cv
 
-import poe
+from . import poe
 
 _LOGGER = logging.getLogger(__name__)
 
