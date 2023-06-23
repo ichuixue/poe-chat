@@ -36,9 +36,9 @@ wget -q -O - https://hacs.vip/get | HUB_DOMAIN=ghproxy.com/github.com DOMAIN=poe
 4. `proxy`: Proxy to use, `http://192.168.xx.xx:7890`
 
 ## Siri Shortcut for Apple devices
-
-1. Download the [Nod-Red flow for Siri Shortcut](https://github.com/ichuixue/poe-chat/blob/main/poe-chat_siri-shortcut_flows.json) and added it to Node-Red in your homeassistant.
-2. Download the [latest version of Poe-Chat Siri Shortcut](https://www.icloud.com/shortcuts/3938233c9bff4c53b29e632c841e3003) on your iPhone or iPad and Config the relevant parameters according to the pop-up window during installation.
+**ATTENTION: DO NOT use it too frequently in a short time or your Poe account may have chance to be banned.**
+1. Download the [Nod-Red flow for Siri Shortcut](https://github.com/ichuixue/poe-chat/blob/main/poe-chat_siri-shortcut_flows.json) and add it to Node-Red in your homeassistant.
+2. Download the [latest version of Poe-Chat Siri Shortcut](https://www.icloud.com/shortcuts/3938233c9bff4c53b29e632c841e3003) to your iPhone or iPad and Config the relevant parameters according to the pop-up window during installation.
    - `HA_address`: Your homeassistant IP_ADDRESS, e.g., `http://HA_IP_ADDRESS:8123`
    - `HA_token`: `The Long-Lived Access Token` obtained at `http://HA_IP_ADDRESS:8123/profile`
    - `entry_name`: The entry name when you config the `Poe Chat` integration
@@ -54,8 +54,9 @@ wget -q -O - https://hacs.vip/get | HUB_DOMAIN=ghproxy.com/github.com DOMAIN=poe
      "a2_2": "Claude+"
      }
      ```
-4. Run the Siri shortcut once and agree to all permissions.
-5. Now you can use `hey siri 对话` to talk with ChatGPT on Apple devices (iPhone/iPad/Apple Watch/Homepod...)
+3. Run the Siri shortcut once and agree to all permissions.
+4. Now you can use `hey siri 对话` to talk with ChatGPT on Apple devices (iPhone/iPad/Apple Watch/HomePod...)
+
 
 ## HA service
 
