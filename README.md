@@ -26,9 +26,14 @@ wget -q -O - https://hacs.vip/get | HUB_DOMAIN=ghproxy.com/github.com DOMAIN=poe
 
 ## Config
 
-- `name`: Config entry name, unique
-- `token`: Poe token, `p-b` in cookies
-- `proxy`: Proxy to use, `http://192.168.xx.xx:7890`
+1. `name`: Config entry name, unique
+2. `token`: Poe token, `p-b` in cookies
+
+   Find Your Poe Token: Log into [Poe](https://poe.com) on any desktop web browser, then open your browser's developer tools (also known as "inspect") and look for the value of the `p-b` cookie in the following menus:
+   - Chromium: Devtools > Application > Cookies > poe.com
+   - Firefox: Devtools > Storage > Cookies
+   - Safari: Devtools > Storage > Cookies
+4. `proxy`: Proxy to use, `http://192.168.xx.xx:7890`
 
 
 ## Using
