@@ -37,6 +37,8 @@ wget -q -O - https://hacs.vip/get | HUB_DOMAIN=ghproxy.com/github.com DOMAIN=poe
 
 ## Siri Shortcut for Apple devices
 **ATTENTION: DO NOT use it too frequently in a short time or your Poe account may have chance to be banned.**
+
+[Watch the demo vedio here](https://b23.tv/frVe14Q)
 1. Download the [Nod-Red flow for Siri Shortcut](https://github.com/ichuixue/poe-chat/blob/main/poe-chat_siri-shortcut_flows.json) and add it to Node-Red in your homeassistant.
 2. Download the [latest version of Poe-Chat Siri Shortcut](https://www.icloud.com/shortcuts/3938233c9bff4c53b29e632c841e3003) to your iPhone or iPad and Config the relevant parameters according to the pop-up window during installation.
    - `HA_address`: Your homeassistant IP_ADDRESS, e.g., `http://HA_IP_ADDRESS:8123`
