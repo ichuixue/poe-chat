@@ -1,7 +1,7 @@
 {
   "domain": "poe_chat",
   "name": "Poe Chat",
-  "codeowners": ["@al-one", "@ichuixue"],
+  "codeowners": ["@al-one", "@ading2210", "@ichuixue"],
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/hasscc/poe-chat",
