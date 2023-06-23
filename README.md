@@ -28,7 +28,7 @@ wget -q -O - https://hacs.vip/get | HUB_DOMAIN=ghproxy.com/github.com DOMAIN=poe
 
 - `name`: Config entry name, unique
 - `token`: Poe token, `p-b` in cookies
-- `proxy`: Proxy to use, `socks5://192.168.88.1:7890`
+- `proxy`: Proxy to use, `http://192.168.xx.xx:7890`
 
 
 ## Using
@@ -45,7 +45,7 @@ wget -q -O - https://hacs.vip/get | HUB_DOMAIN=ghproxy.com/github.com DOMAIN=poe
       throw_chunk: true # Output chunked reply text to HA notifications
       extra: # Optional
           chunk_size: 128
-          chunk_line: true
+          chunk_mark: true
           chunk_code: true
   ```
 
