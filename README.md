@@ -33,7 +33,7 @@ wget -q -O - https://hacs.vip/get | HUB_DOMAIN=ghproxy.com/github.com DOMAIN=poe
    - Chromium: Devtools > Application > Cookies > poe.com
    - Firefox: Devtools > Storage > Cookies
    - Safari: Devtools > Storage > Cookies
-4. `proxy`: Proxy to use, `http://192.168.xx.xx:7890`
+4. `proxy`: Proxy to use, e.g., `http://192.168.xx.xx:7890`
 
 ## Siri Shortcut for Apple devices
 **ATTENTION: DO NOT use it too frequently in a short time or your Poe account may have chance to be banned.**
