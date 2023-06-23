@@ -3,14 +3,14 @@
 <a name="installing"></a>
 ## Installation
 
-#### Method 1: [HACS (**Click to install**)](https://my.home-assistant.io/redirect/hacs_repository/?owner=hasscc&repository=poe-chat&category=integration)
+#### Method 1: [HACS (**Click to install**)](https://my.home-assistant.io/redirect/hacs_repository/?owner=ichuixue&repository=poe-chat&category=integration)
 
 #### Method 2: Manually install via Samba / SFTP
-> [Download](https://github.com/hasscc/poe-chat/archive/main.zip) and copy `custom_components/poe_chat` folder to `custom_components` folder in your HomeAssistant config folder
+> [Download](https://github.com/ichuixue/poe-chat/archive/main.zip) and copy `custom_components/poe_chat` folder to `custom_components` folder in your HomeAssistant config folder
 
 #### Method 3: Onkey shell via SSH / Terminal & SSH add-on
 ```shell
-wget -q -O - https://hacs.vip/get | HUB_DOMAIN=ghproxy.com/github.com DOMAIN=poe_chat REPO_PATH=hasscc/poe-chat ARCHIVE_TAG=main bash -
+wget -q -O - https://hacs.vip/get | HUB_DOMAIN=ghproxy.com/github.com DOMAIN=poe_chat REPO_PATH=ichuixue/poe-chat ARCHIVE_TAG=main bash -
 ```
 
 #### Method 4: shell_command service
@@ -18,7 +18,7 @@ wget -q -O - https://hacs.vip/get | HUB_DOMAIN=ghproxy.com/github.com DOMAIN=poe
     ```yaml
     shell_command:
       update_poe_chat: |-
-        wget -q -O - https://hacs.vip/get | HUB_DOMAIN=ghproxy.com/github.com DOMAIN=poe_chat REPO_PATH=hasscc/poe-chat ARCHIVE_TAG=main bash -
+        wget -q -O - https://hacs.vip/get | HUB_DOMAIN=ghproxy.com/github.com DOMAIN=poe_chat REPO_PATH=ichuixue/poe-chat ARCHIVE_TAG=main bash -
     ```
 2. Restart HA core
 3. Call this [`service: shell_command.update_poe_chat`](https://my.home-assistant.io/redirect/developer_call_service/?service=shell_command.update_poe_chat) in Developer Tools
