@@ -60,14 +60,14 @@ wget -q -O - https://hacs.vip/get | HUB_DOMAIN=ghproxy.com/github.com DOMAIN=poe
 4. Now you can use `hey siri 对话` to talk with ChatGPT on Apple devices (iPhone/iPad/Apple Watch/HomePod/CarPlay...)
 
 
-## HA service
+## Using in HA
 
 - [![Call service: poe_chat.chat](https://my.home-assistant.io/badges/developer_call_service.svg) `poe_chat.chat`](https://my.home-assistant.io/redirect/developer_call_service/?service=poe_chat.chat)
   ```yaml
   service: poe_chat.chat
   data:
       name: poe # Config entry name
-      bot: capybara
+      bot: chinchilla
       message: Hello
       conversation_id: xxxx
       throw: false      # Output reply result to HA notifications
@@ -86,14 +86,14 @@ wget -q -O - https://hacs.vip/get | HUB_DOMAIN=ghproxy.com/github.com DOMAIN=poe
   event_type: poe_chat.reply
   data:
     name: poe
-    bot: capybara
+    bot: chinchilla
     message: Hello
     conversation_id: xxxx
     id: TWVzc2FnZTozMjM1OTk4Nzc=
     messageId: 323599877
     creationTime: 1681373526812436
     state: incomplete
-    author: capybara
+    author: chinchilla
     text: Hello! How can I assist you today?
     linkifiedText: Hello! How can I assist you today?
     text_new: assist you today?
@@ -104,7 +104,7 @@ wget -q -O - https://hacs.vip/get | HUB_DOMAIN=ghproxy.com/github.com DOMAIN=poe
   event_type: poe_chat.reply_error
   data:
     name: poe
-    bot: capybara
+    bot: chinchilla
     message: Hello
     conversation_id: xxxx
     error: xxxx
