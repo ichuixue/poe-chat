@@ -464,7 +464,10 @@ class Client:
     while self.ws_error:
       time.sleep(0.01)
 
-    self.connect_ws()
+    if not self.ws_connected:
+      self.disconnect_ws()
+      self.setup_connection()
+      self.connect_ws() 
 
     logger.info(f"Sending message to {chatbot}: {message}")
 
