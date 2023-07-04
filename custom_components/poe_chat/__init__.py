@@ -306,9 +306,3 @@ class PoeClient(poe.Client):
     async def async_disconnect(self):
         if self.ws_connected:
             await self.hass.async_add_executor_job(self.disconnect_ws)
-
-    def get_bot(self, display_name):
-        url = f'{self.home_url.rstrip("/")}/_next/data/{self.next_data["buildId"]}/{display_name}.json'
-        r = poe.request_with_retries(self.session.get, url)
-        chat_data = r.json()["pageProps"]["data"]["chatOfBotDisplayName"]
-        return chat_data
