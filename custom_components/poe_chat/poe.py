@@ -1,10 +1,11 @@
 import re, json, random, logging, time, queue, threading, traceback, hashlib, string, random, os
 import requests
-# import tls_client as requests_tls
-import requests as requests_tls
+#import tls_client as requests_tls
+import requests as rquests_tls
 import secrets
 import websocket
 import uuid
+import random
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -34,10 +35,36 @@ def load_queries():
       queries[path.stem] = f.read()
 
 def generate_payload(query_name, variables):
+  if query_name == "recv":
+    return generate_recv_payload(variables)
   return {
     "query": queries[query_name],
     "variables": variables
   }
+
+def generate_recv_payload(variables):
+  payload = [
+    {
+      "category": "poe/bot_response_speed",
+      "data": variables,
+    }
+  ]
+  
+  if random.random() > 0.9:
+    payload.append({
+      "category": "poe/statsd_event",
+      "data": {
+        "key": "poe.speed.web_vitals.INP",
+        "value": random.randint(100, 125),
+        "category": "time",
+        "path": "/[handle]",
+        "extra_data": {},
+      },
+    })
+
+  print(payload)
+  return payload
+
 
 def request_with_retries(method, *args, **kwargs):
   attempts = kwargs.get("attempts") or 10
@@ -182,7 +209,7 @@ class Client:
     for pair in cipher_pairs:
       formkey_index, key_index = map(int, pair)
       formkey_list[formkey_index] = key_text[key_index]
-    formkey = "".join(formkey_list)
+    formkey = "".join(formkey_list)[:-1] # credit to @aditiaryan on realizing my mistake
     
     return formkey
 
@@ -196,7 +223,10 @@ class Client:
 
     if overwrite_vars:
       self.formkey = self.extract_formkey(r.text)
-      self.viewer = next_data["props"]["pageProps"]["data"]["viewer"]
+      if "payload" in next_data["props"]["pageProps"]:
+        self.viewer = next_data["props"]["pageProps"]["payload"]["viewer"]
+      else:
+        self.viewer = next_data["props"]["pageProps"]["data"]["viewer"]
       self.user_id = self.viewer["poeUser"]["id"]
       self.next_data = next_data
 
@@ -205,9 +235,11 @@ class Client:
   def get_bot(self, display_name):
     url = f'https://poe.com/_next/data/{self.next_data["buildId"]}/{display_name}.json'
     
-    r = request_with_retries(self.session.get, url)
-
-    chat_data = r.json()["pageProps"]["data"]["chatOfBotDisplayName"]
+    data = request_with_retries(self.session.get, url).json()
+    if "payload" in data["pageProps"]:
+      chat_data = data["pageProps"]["payload"]["chatOfBotHandle"]
+    else:
+      chat_data = data["pageProps"]["data"]["chatOfBotHandle"]
     return chat_data
     
   def get_bots(self, download_next_data=True):
@@ -259,13 +291,18 @@ class Client:
   def explore_bots(self, end_cursor=None, count=25):
     if not end_cursor:
       url = f'https://poe.com/_next/data/{self.next_data["buildId"]}/explore_bots.json'
-      r = request_with_retries(self.session.get, url)
-      nodes = r.json()["pageProps"]["data"]["exploreBotsConnection"]["edges"]
+      r = request_with_retries(self.session.get, url).json()
+      if "payload" in r["pageProps"]:
+        key = "payload"
+        nodes = r["pageProps"]["payload"]["exploreBotsConnection"]["edges"]
+      else:
+        key = "data"
+        nodes = r["pageProps"]["data"]["exploreBotsConnection"]["edges"]
       bots = [node["node"] for node in nodes]
       bots = bots[:count]
       return {
         "bots": bots,
-        "end_cursor": r.json()["pageProps"]["data"]["exploreBotsConnection"]["pageInfo" ]["endCursor"],
+        "end_cursor": r["pageProps"][key]["exploreBotsConnection"]["pageInfo" ]["endCursor"],
       }
 
     else:
@@ -312,7 +349,11 @@ class Client:
       }
       headers = {**self.gql_headers, **headers}
       
-      r = request_with_retries(self.session.post, self.gql_url, data=payload, headers=headers)
+      if query_name == "recv":
+        r = request_with_retries(self.session.post, self.gql_recv_url, data=payload, headers=headers)
+        return None
+      else:
+        r = request_with_retries(self.session.post, self.gql_url, data=payload, headers=headers)
       
       data = r.json()
       if data["data"] == None:
@@ -348,6 +389,10 @@ class Client:
         "http_proxy_host": proxy_parsed.hostname,
         "http_proxy_port": proxy_parsed.port
       }
+
+      # auth if exists
+      if proxy_parsed.username and proxy_parsed.password:
+        kwargs["http_proxy_auth"] = (proxy_parsed.username, proxy_parsed.password)
 
     self.ws.run_forever(**kwargs)
 
@@ -448,14 +493,14 @@ class Client:
       self.disconnect_ws()
       self.connect_ws()
 
-  def send_message(self, chatbot, message, with_chat_break=False, timeout=20):
+  def send_message(self, chatbot, message, with_chat_break=False, timeout=20, async_recv=True):
     # if there is another active message, wait until it has finished sending
-    #timer = 0
-    #while None in self.active_messages.values():
-    #  time.sleep(0.01)
-    #  timer += 0.01
-    #  if timer > timeout:
-    #    raise RuntimeError("Timed out waiting for other messages to send.")
+  #  timer = 0
+  #  while None in self.active_messages.values():
+  #    time.sleep(0.01)
+  #    timer += 0.01
+  #    if timer > timeout:
+  #      raise RuntimeError("Timed out waiting for other messages to send.")
 
     # None indicates that a message is still in progress
     self.active_messages["pending"] = None
@@ -464,7 +509,7 @@ class Client:
     while self.ws_error:
       time.sleep(0.01)
 
-    self.connect_ws() 
+    self.connect_ws()
 
     logger.info(f"Sending message to {chatbot}: {message}")
 
@@ -515,6 +560,32 @@ class Client:
       message_id = message["messageId"]
 
       yield message
+    
+    def recv_post_thread():
+      bot_message_id = self.active_messages[human_message_id]
+
+      # wait 2 seconds after sending the request
+      time.sleep(2.5)
+
+      # send recv_post after receiving the last message
+      self.send_query("recv", {
+        "bot": chatbot,
+        "time_to_first_typing_indicator": 300, # randomly select
+        "time_to_first_subscription_response": 600,
+        "time_to_full_bot_response": 1100,
+        "full_response_length": len(last_text) + 1,
+        "full_response_word_count": len(last_text.split(" ")) + 1,
+        "human_message_id": human_message_id,
+        "bot_message_id": bot_message_id,
+        "chat_id": chat_id,
+        "bot_response_status": "success",
+      })
+      time.sleep(0.5)
+    
+    t = threading.Thread(target=recv_post_thread, daemon=True)
+    t.start()
+    if not async_recv:
+      t.join()
 
     del self.active_messages[human_message_id]
     del self.message_queues[human_message_id]
