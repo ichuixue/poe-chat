@@ -62,7 +62,6 @@ def generate_recv_payload(variables):
       },
     })
 
-  print(payload)
   return payload
 
 
@@ -138,6 +137,7 @@ class Client:
 
     self.active_messages = {}
     self.message_queues = {}
+    self.suggestion_callbacks = {}
 
     self.headers = {**headers, **{
       "Referrer": "https://poe.com/",
@@ -396,7 +396,7 @@ class Client:
 
     self.ws.run_forever(**kwargs)
 
-  def connect_ws(self, timeout=10):
+  def connect_ws(self, timeout=5):
     if self.ws_connected:
       return
 
@@ -475,6 +475,12 @@ class Client:
           continue
         message = message_data["payload"]["data"]["messageAdded"]
 
+        #handle suggested replies
+        if "suggestedReplies" in message and type(message["suggestedReplies"]) == list and len(message["suggestedReplies"]) > 0 and message["messageId"] in self.suggestion_callbacks:
+          self.suggestion_callbacks[message["messageId"]](message["suggestedReplies"][-1])
+          if len(message["suggestedReplies"]) >= 3:
+            del self.suggestion_callbacks[message["messageId"]]
+
         copied_dict = self.active_messages.copy()
         for key, value in copied_dict.items():
           #add the message to the appropriate queue
@@ -493,7 +499,7 @@ class Client:
       self.disconnect_ws()
       self.connect_ws()
 
-  def send_message(self, chatbot, message, with_chat_break=False, timeout=20, async_recv=True):
+  def send_message(self, chatbot, message, with_chat_break=False, timeout=20, async_recv=True, suggest_callback=None):
     # if there is another active message, wait until it has finished sending
   #  timer = 0
   #  while None in self.active_messages.values():
@@ -531,7 +537,7 @@ class Client:
       human_message = message_data["data"]["messageEdgeCreate"]["message"]
       human_message_id = human_message["node"]["messageId"]
     except TypeError:
-      raise RuntimeError(f"An unknown error occured. Raw response data: {message_data}")
+      raise RuntimeError(f"An unknown error occurred. Raw response data: {message_data}")
 
     # indicate that the current message is waiting for a response
     self.active_messages[human_message_id] = None
@@ -558,6 +564,10 @@ class Client:
       message["text_new"] = message["text"][len(last_text):]
       last_text = message["text"]
       message_id = message["messageId"]
+
+      # set a suggestion callback on response
+      if callable(suggest_callback) and not message_id in self.suggestion_callbacks:
+        self.suggestion_callbacks[message_id] = suggest_callback
 
       yield message
     
