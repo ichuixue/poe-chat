@@ -24,6 +24,12 @@ chat:
       required: false
       selector:
         text:
+    reconnect_ws:
+      description: Reconnect the websocket before sending the message
+      required: false
+      example: false
+      selector: 
+        boolean:
     throw:
       description: Throw reply
       default: false
