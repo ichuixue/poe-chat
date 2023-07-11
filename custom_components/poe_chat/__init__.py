@@ -124,6 +124,7 @@ class ComponentServices:
                 vol.Optional('bot'): cv.string,
                 vol.Required('message'): cv.string,
                 vol.Optional('conversation_id'): cv.string,
+                vol.Optional('reconnect_ws', default=False): cv.boolean,
                 vol.Optional('extra'): cv.match_all,
                 vol.Optional('throw', default=False): cv.boolean,
                 vol.Optional('throw_chunk', default=False): cv.boolean,
@@ -230,15 +231,18 @@ class PoeClient(poe.Client):
         return await self.hass.async_add_executor_job(partial(self.send, **kwargs))
 
     def send(self, **kwargs):
-        bot = kwargs.get(CONF_BOT) or self.config.get(CONF_BOT) or 'capybara'
+        bot = kwargs.get(CONF_BOT) or self.config.get(CONF_BOT) or 'chinchilla'
         msg = kwargs.get('message')
         ext = kwargs.get('extra') or {}
         if not msg:
             return None
 
-        reply = None
+        reply = "No reply was returned, please check the settings"
         throw_chunk = kwargs.get('throw_chunk', False)
         throw = kwargs.get('throw', throw_chunk)
+        reconnect_ws = kwargs.get('reconnect_ws', False)
+        if reconnect_ws:
+            self.ws_connected = False
         try:
             txt = ''
             siz = int(ext.get('chunk_size', 2) or 1)
