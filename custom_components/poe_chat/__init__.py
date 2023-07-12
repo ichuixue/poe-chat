@@ -197,6 +197,7 @@ class PoeClient(poe.Client):
 
         self.active_messages = {}
         self.message_queues = {}
+        self.suggestion_callbacks = {}
 
         self.session.cookies.set("p-b", self.token)
         self.headers = {
