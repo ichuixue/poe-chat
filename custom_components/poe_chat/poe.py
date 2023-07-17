@@ -396,7 +396,7 @@ class Client:
 
     self.ws.run_forever(**kwargs)
 
-  def connect_ws(self, timeout=5):
+  def connect_ws(self, timeout=10):
     if self.ws_connected:
       return
 
