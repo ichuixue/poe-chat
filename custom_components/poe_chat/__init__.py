@@ -244,6 +244,7 @@ class PoeClient(poe.Client):
         reconnect_ws = kwargs.get('reconnect_ws', False)
         if reconnect_ws:
             self.ws_connected = False
+            self.ws_connecting = False
             self.ws_error = False
         try:
             txt = ''
