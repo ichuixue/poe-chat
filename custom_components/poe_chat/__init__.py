@@ -122,7 +122,7 @@ class ComponentServices:
             schema=vol.Schema({
                 vol.Required('name'): cv.string,
                 vol.Optional('bot'): cv.string,
-                vol.Required('message'): cv.string,
+                vol.Optional('message'): cv.string,
                 vol.Optional('conversation_id'): cv.string,
                 vol.Optional('reconnect_ws', default=False): cv.boolean,
                 vol.Optional('extra'): cv.match_all,
@@ -217,6 +217,9 @@ class PoeClient(poe.Client):
 
     def init(self):
         try:
+            self.ws_connected = False
+            self.ws_connecting = False
+            self.ws_error = False
             self.setup_connection()
             self.connect_ws(timeout=10)
             _LOGGER.info('Init client: %s', [
@@ -235,17 +238,19 @@ class PoeClient(poe.Client):
         bot = kwargs.get(CONF_BOT) or self.config.get(CONF_BOT) or 'chinchilla'
         msg = kwargs.get('message')
         ext = kwargs.get('extra') or {}
-        if not msg:
-            return None
-
-        reply = "No reply was returned, please check the settings"
+        reply = None
         throw_chunk = kwargs.get('throw_chunk', False)
         throw = kwargs.get('throw', throw_chunk)
         reconnect_ws = kwargs.get('reconnect_ws', False)
+      
         if reconnect_ws:
             self.ws_connected = False
             self.ws_connecting = False
             self.ws_error = False
+        if not msg:
+            if reconnect_ws:
+                self.connect_ws(timeout=10)
+            return None
         try:
             txt = ''
             siz = int(ext.get('chunk_size', 2) or 1)
@@ -291,6 +296,7 @@ class PoeClient(poe.Client):
                 )
         if not reply:
             self.reconnect()
+            reply = 'No reply was returned, please check the settings'
         return reply
 
     def reply_chunk(self, msg, reply, throw_chunk=False):
