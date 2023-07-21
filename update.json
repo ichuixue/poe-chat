@@ -1,5 +1,5 @@
 {
-    "poechat_shortcut_version": "1.1",
-    "updateContent": "快捷指令发现新版本v1.1，新增自动重连websocket功能，增加稳定性，点击下载：https://docs.qq.com/doc/DREN3UktRS0xmQ2hJ",
+    "poechat_shortcut_version": "1.2",
+    "updateContent": "快捷指令发现新版本v1.2，优化重连websocket的逻辑，提高响应速度，请将HA端POE集成升级到v1.0.6及以上版本。点击下载：https://docs.qq.com/doc/DREN3UktRS0xmQ2hJ",
     "Author": "吹雪"
 }
