@@ -14,9 +14,9 @@ chat:
       selector:
         text:
     message:
-      description: Message to send
+      description: Message to send. If there is no message and 'reconnect_ws' is 'True', the websocket will be reconnected without sending a message
       example: Hello
-      required: true
+      required: false
       selector:
         text:
     conversation_id:
