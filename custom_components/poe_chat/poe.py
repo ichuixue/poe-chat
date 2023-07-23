@@ -198,7 +198,7 @@ class Client:
     return device_id
     
   def extract_formkey(self, html):
-    script_regex = r'<script>if\(.+\)throw new Error;(.+)</script>'
+    script_regex = r'<script>(.+)function\(\){return .\.join\(""\)};</script>'
     script_text = re.search(script_regex, html).group(1)
     key_regex = r'var .="([0-9a-f]+)",'
     key_text = re.search(key_regex, script_text).group(1)
@@ -209,10 +209,10 @@ class Client:
     for pair in cipher_pairs:
       formkey_index, key_index = map(int, pair)
       formkey_list[formkey_index] = key_text[key_index]
-    formkey = "".join(formkey_list)[:-1] # credit to @aditiaryan on realizing my mistake
-    
-    return formkey
+    formkey = "".join(formkey_list)[:-1]
 
+    return formkey
+    
   def get_next_data(self, overwrite_vars=False):
     logger.info("Downloading next_data...")
     
@@ -340,24 +340,23 @@ class Client:
     for i in range(attempts):
       json_data = generate_payload(query_name, variables)
       payload = json.dumps(json_data, separators=(",", ":"))
-      
-      base_string = payload + self.gql_headers["poe-formkey"] + "WpuLMiXEKKE98j56k"
-      
+
+      base_string = payload + self.gql_headers["poe-formkey"] + "Jb1hi3fg1MxZpzYfy"
+
       headers = {
         "content-type": "application/json",
         "poe-tag-id": hashlib.md5(base_string.encode()).hexdigest()
       }
       headers = {**self.gql_headers, **headers}
-      
+
       if query_name == "recv":
         r = request_with_retries(self.session.post, self.gql_recv_url, data=payload, headers=headers)
         return None
-      else:
-        r = request_with_retries(self.session.post, self.gql_url, data=payload, headers=headers)
-      
+
+      r = request_with_retries(self.session.post, self.gql_url, data=payload, headers=headers)
       data = r.json()
       if data["data"] == None:
-        logger.warn(f'{query_name} returned an error: {data["errors"][0]["message"]} | Retrying ({i+1}/20)')
+        logger.warn(f'{query_name} returned an error: {data["errors"][0]["message"]} | Retrying ({i+1}/20) | Response: {data}')
         time.sleep(2)
         continue
 
